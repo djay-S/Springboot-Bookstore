@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 @Table(name = "PRODUCTS")
@@ -19,19 +18,15 @@ class ProductEntity {
     private long id;
 
     @Column(nullable = false, unique = true)
-    @NotBlank(message = "Product code is required")
-    private String code;
+    @NotBlank(message = "Product code is required") private String code;
 
     @Column(nullable = false)
-    @NotBlank(message = "Product name is required")
-    private String name;
+    @NotBlank(message = "Product name is required") private String name;
 
     private String description;
 
     private String imageUrl;
 
     @Column(nullable = false)
-    @NotNull(message = "Product price is required")
-    @DecimalMin("0.1")
-    private BigDecimal price;
+    @NotNull(message = "Product price is required") @DecimalMin("0.1") private BigDecimal price;
 }
