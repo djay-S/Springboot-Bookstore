@@ -1,15 +1,15 @@
 package org.demo.catalog_service.web.controller;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.http.ContentType;
 import org.demo.catalog_service.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-//This annotation would execute the sql script before every test
+// This annotation would execute the sql script before every test
 @Sql("/test-data.sql")
 class ProductControllerTest extends AbstractIntegrationTest {
 
