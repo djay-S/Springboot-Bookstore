@@ -1,5 +1,6 @@
 package org.demo.catalog_service.domain;
 
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.demo.catalog_service.ApplicationProperties;
 import org.demo.catalog_service.domain.records.PagedResult;
@@ -35,5 +36,9 @@ public class ProductService {
                 productsPage.isLast(),
                 productsPage.hasNext(),
                 productsPage.hasPrevious());
+    }
+
+    public Optional<Product> getProductByCode(String code) {
+        return productRepository.findByCode(code).map(ProductMapper::toProduct);
     }
 }
