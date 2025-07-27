@@ -28,6 +28,7 @@
 	</scm>
 
 	<properties>
+		<docker-image-name>dhananjaysinghkushwaha/bookstore-${project.artifactId}</docker-image-name>
 		<java.version>21</java.version>
 		<lombok.version>1.18.38</lombok.version>
 		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
@@ -136,6 +137,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+<!--					By default, image name would be project artifact id-->
+<!--					run `mvn -pl catalog-service spring-boot:build-image -DskipTests`, to build the image-->
+					<image>
+						<name>${docker-image-name}</name>
+					</image>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
