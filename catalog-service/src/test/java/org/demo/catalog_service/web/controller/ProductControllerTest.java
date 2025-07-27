@@ -6,12 +6,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import org.demo.catalog_service.AbstractIntegrationTest;
 import org.demo.catalog_service.domain.records.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.math.BigDecimal;
 
 // This annotation would execute the sql script before every test
 @Sql("/test-data.sql")
