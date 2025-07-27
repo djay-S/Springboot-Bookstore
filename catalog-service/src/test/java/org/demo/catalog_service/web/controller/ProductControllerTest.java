@@ -1,13 +1,17 @@
 package org.demo.catalog_service.web.controller;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.http.ContentType;
 import org.demo.catalog_service.AbstractIntegrationTest;
+import org.demo.catalog_service.domain.records.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.math.BigDecimal;
 
 // This annotation would execute the sql script before every test
 @Sql("/test-data.sql")
@@ -28,5 +32,36 @@ class ProductControllerTest extends AbstractIntegrationTest {
                 .body("isLast", is(false))
                 .body("hasNext", is(true))
                 .body("hasPrevious", is(false));
+    }
+
+    @Test
+    void shouldGetProductByCode() {
+        Product product = given().contentType(ContentType.JSON)
+                .when()
+                .get("/api/products/{code}", "P100")
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .extract()
+                .body()
+                .as(Product.class);
+
+        assertThat(product.code()).isEqualTo("P100");
+        assertThat(product.name()).isEqualTo("The Hunger Games");
+        assertThat(product.description()).isEqualTo("Winning will make you famous. Losing means certain death...");
+        assertThat(product.price()).isEqualTo(new BigDecimal("34.0"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenProductCodeNotExists() {
+        String code = "invalid_product_code";
+        given().contentType(ContentType.JSON)
+                .when()
+                .get("/api/products/{code}", code)
+                .then()
+                .statusCode(404)
+                .body("status", is(404))
+                .body("title", is("Product Not Found"))
+                .body("detail", is("Product with code: " + code + " not found"));
     }
 }

@@ -2,7 +2,10 @@ package org.demo.catalog_service.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,5 +31,20 @@ class ProductRepositoryTest {
     void shouldGetAllProducts() {
         List<ProductEntity> productEntities = productRepository.findAll();
         assertThat(productEntities).hasSize(15);
+    }
+
+    @Test
+    void shouldGetProductByCode() {
+        ProductEntity productEntity = productRepository.findByCode("P101").orElseThrow();
+        assertThat(productEntity.getCode()).isEqualTo("P101");
+        assertThat(productEntity.getName()).isEqualTo("To Kill a Mockingbird");
+        assertThat(productEntity.getDescription()).isEqualTo("The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it...");
+        assertThat(productEntity.getPrice()).isEqualTo(new BigDecimal("45.40"));
+    }
+
+    @Test
+    void shouldReturnEmptyWhenProductCodeNotExist() {
+        Optional<ProductEntity> productEntity = productRepository.findByCode("invalid_product_code");
+        assertThat(productEntity).isEmpty();
     }
 }
