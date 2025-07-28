@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
 // This annotation would execute the sql script before every test
+// Extra comment to trigger build
 @Sql("/test-data.sql")
 class ProductControllerTest extends AbstractIntegrationTest {
 
