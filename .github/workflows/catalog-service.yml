@@ -53,5 +53,5 @@ jobs:
 #        This builds the docker image using spring Cloud Native Build packs and publishes it to docker hub
         name: Build and Publish Docker Image
         run: |
-          ./mvnw spring-boot:build:image -DskipTests
+          ./mvnw spring-boot:build-image -DskipTests
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/bookstore-catalog-service
