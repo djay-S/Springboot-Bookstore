@@ -1,9 +1,8 @@
 package org.demo.orderservice.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 @Entity

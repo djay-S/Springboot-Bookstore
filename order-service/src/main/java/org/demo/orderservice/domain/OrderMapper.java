@@ -1,12 +1,11 @@
 package org.demo.orderservice.domain;
 
-import org.demo.orderservice.domain.model.enums.OrderStatus;
-import org.demo.orderservice.domain.model.records.CreateOrderRequest;
-import org.demo.orderservice.domain.model.records.OrderItem;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.demo.orderservice.domain.model.enums.OrderStatus;
+import org.demo.orderservice.domain.model.records.CreateOrderRequest;
+import org.demo.orderservice.domain.model.records.OrderItem;
 
 public class OrderMapper {
     static OrderEntity toEntity(CreateOrderRequest request) {

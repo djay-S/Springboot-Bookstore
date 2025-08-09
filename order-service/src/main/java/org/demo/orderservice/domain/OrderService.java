@@ -2,7 +2,6 @@ package org.demo.orderservice.domain;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.demo.orderservice.domain.OrderRepository;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
 import org.demo.orderservice.domain.model.records.CreateOrderResponse;
 import org.springframework.stereotype.Service;
