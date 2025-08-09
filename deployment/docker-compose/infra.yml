@@ -47,6 +47,7 @@ services:
       - RABBITMQ_DEFAULT_PASS={mq_pass}
     ports:
       - "5672:5672"
+#      GUI port for rabbit mq if 15672
       -  "15672:15672"
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
