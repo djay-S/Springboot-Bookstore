@@ -2,9 +2,11 @@ package org.demo.orderservice.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "order_items")
 class OrderItemEntity {
