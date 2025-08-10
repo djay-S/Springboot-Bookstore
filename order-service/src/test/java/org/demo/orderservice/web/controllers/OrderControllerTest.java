@@ -1,0 +1,56 @@
+package org.demo.orderservice.web.controllers;
+
+import io.restassured.http.ContentType;
+import org.demo.orderservice.AbstractIntegrationTest;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.*;
+
+class OrderControllerTest extends AbstractIntegrationTest {
+
+    @Nested
+    class CreateOrderTests {
+        @Test
+        void shouldCreateNewOrderSuccessfully() {
+            var payload =
+                    """
+                        {
+                            "customer" : {
+                                "name": "Siva",
+                                "email": "siva@gmail.com",
+                                "phone": "999999999"
+                            },
+                            "deliveryAddress" : {
+                                "addressLine1": "HNO 123",
+                                "addressLine2": "Kukatpally",
+                                "city": "Hyderabad",
+                                "state": "Telangana",
+                                "zipCode": "500072",
+                                "country": "India"
+                            },
+                            "items": [
+                                {
+                                    "code": "P100",
+                                    "name": "Product 1",
+                                    "price": 25.50,
+                                    "quantity": 1
+                                }
+                            ]
+                        }
+                    """;
+            given().contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/orders")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("orderNumber", notNullValue());
+        }
+        
+    }
+
+}
