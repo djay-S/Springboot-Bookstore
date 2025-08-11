@@ -14,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderValidator orderValidator;
 
     public CreateOrderResponse createOrder(String userName, CreateOrderRequest request) {
+        orderValidator.validate(request);
         OrderEntity newOrder = OrderMapper.toEntity(request);
         newOrder.setUserName(userName);
         OrderEntity savedOrder = orderRepository.save(newOrder);
