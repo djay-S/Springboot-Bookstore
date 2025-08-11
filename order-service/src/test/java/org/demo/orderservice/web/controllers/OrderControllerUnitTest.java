@@ -1,6 +1,12 @@
 package org.demo.orderservice.web.controllers;
 
+import static org.junit.jupiter.api.Named.named;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
 import org.demo.orderservice.domain.OrderService;
 import org.demo.orderservice.domain.SecurityService;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
@@ -14,13 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Named.named;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Unit tests for the {@link OrderController} using MockMvc.
@@ -48,10 +47,12 @@ public class OrderControllerUnitTest {
 
     static Stream<Arguments> createOrderRequestProvider() {
         return Stream.of(
-                Arguments.arguments(named("Order with Invalid Customer", TestDataGenerator.createOrderRequestWithInvalidCustomer())),
-                Arguments.arguments(named("Order with Invalid Delivery Address", TestDataGenerator.createOrderRequestWithInvalidDeliveryAddress())),
-                Arguments.arguments(named("Order with No Items", TestDataGenerator.createOrderRequestWithNoItems()))
-        );
+                Arguments.arguments(named(
+                        "Order with Invalid Customer", TestDataGenerator.createOrderRequestWithInvalidCustomer())),
+                Arguments.arguments(named(
+                        "Order with Invalid Delivery Address",
+                        TestDataGenerator.createOrderRequestWithInvalidDeliveryAddress())),
+                Arguments.arguments(named("Order with No Items", TestDataGenerator.createOrderRequestWithNoItems())));
     }
 
     /**
@@ -69,8 +70,8 @@ public class OrderControllerUnitTest {
     @MethodSource("createOrderRequestProvider")
     void shouldReturnBadRequestWhenOrderPayloadIsInvalid(CreateOrderRequest request) throws Exception {
         mockMvc.perform(post("/api/orders")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(request))
-        ).andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest());
     }
 }

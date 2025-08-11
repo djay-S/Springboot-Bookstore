@@ -1,14 +1,14 @@
 package org.demo.orderservice.web.controllers;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.restassured.http.ContentType;
 import org.demo.orderservice.AbstractIntegrationTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.*;
 
 class OrderControllerTest extends AbstractIntegrationTest {
 
@@ -50,7 +50,5 @@ class OrderControllerTest extends AbstractIntegrationTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("orderNumber", notNullValue());
         }
-        
     }
-
 }
