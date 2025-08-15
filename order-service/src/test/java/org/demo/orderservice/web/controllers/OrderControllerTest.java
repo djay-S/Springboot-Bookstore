@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import org.demo.orderservice.AbstractIntegrationTest;
 import org.demo.orderservice.testdata.TestDataGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.math.BigDecimal;
 
 class OrderControllerTest extends AbstractIntegrationTest {
 

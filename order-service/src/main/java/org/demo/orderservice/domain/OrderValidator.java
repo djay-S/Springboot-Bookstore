@@ -23,7 +23,8 @@ public class OrderValidator {
                     .getProductByCode(item.code())
                     .orElseThrow(() -> new InvalidOrderException("Invalid Product code: " + item.code()));
 
-//Since new BigDecimal("25.50").equals(new BigDecimal("25.500")) == false and new BigDecimal("25.50").compareTo(new BigDecimal("25.500")) == 0
+            // Since new BigDecimal("25.50").equals(new BigDecimal("25.500")) == false and new
+            // BigDecimal("25.50").compareTo(new BigDecimal("25.500")) == 0
             if (item.price().compareTo(product.price()) != 0) {
                 log.error(
                         "Product price not matching. Actual price: {}, received price: {}",

@@ -29,7 +29,7 @@ class ProductController {
                 .orElseThrow(() -> ProductNotFoundException.forCode(code));
     }
 
-    private void sleep () {
+    private void sleep() {
         try {
             Thread.sleep(6000);
         } catch (InterruptedException e) {
