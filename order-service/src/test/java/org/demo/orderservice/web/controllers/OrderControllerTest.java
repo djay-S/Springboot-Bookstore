@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.restassured.http.ContentType;
 import org.demo.orderservice.AbstractIntegrationTest;
+import org.demo.orderservice.testdata.TestDataGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.math.BigDecimal;
 
 class OrderControllerTest extends AbstractIntegrationTest {
 
@@ -16,6 +19,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
     class CreateOrderTests {
         @Test
         void shouldCreateNewOrderSuccessfully() {
+            mockGetProductByCode("P100", "Product 1", new BigDecimal("25.50"));
             var payload =
                     """
                         {
@@ -49,6 +53,17 @@ class OrderControllerTest extends AbstractIntegrationTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("orderNumber", notNullValue());
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
+            var payload = TestDataGenerator.createOrderRequestWithInvalidCustomer();
+            given().contentType(ContentType.JSON)
+                    .body(payload)
+                    .when()
+                    .post("/api/orders")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 }
