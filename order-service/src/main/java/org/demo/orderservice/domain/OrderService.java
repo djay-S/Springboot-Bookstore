@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
 import org.demo.orderservice.domain.model.records.CreateOrderResponse;
+import org.demo.orderservice.domain.model.records.OrderCreatedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final OrderEventService orderEventService;
     private final OrderRepository orderRepository;
     private final OrderValidator orderValidator;
 
@@ -22,6 +24,8 @@ public class OrderService {
         newOrder.setUserName(userName);
         OrderEntity savedOrder = orderRepository.save(newOrder);
         log.info("Created order with orderNumber: {}", savedOrder.getOrderNumber());
+        OrderCreatedEvent orderCreatedEvent = OrderEventMapper.buildOrderCreatedEvent(savedOrder);
+        orderEventService.save(orderCreatedEvent);
         return new CreateOrderResponse(savedOrder.getOrderNumber());
     }
 }
