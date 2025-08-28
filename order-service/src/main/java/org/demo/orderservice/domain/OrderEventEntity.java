@@ -1,11 +1,10 @@
 package org.demo.orderservice.domain;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.demo.orderservice.domain.model.enums.OrderEventType;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

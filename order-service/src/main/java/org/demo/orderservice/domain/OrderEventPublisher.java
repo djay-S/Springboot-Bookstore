@@ -15,7 +15,6 @@ class OrderEventPublisher {
     private final RabbitTemplate rabbitTemplate;
     private final ApplicationProperties properties;
 
-
     public void publish(OrderCreatedEvent orderCreatedEvent) {
         send(properties.newOrdersQueue(), orderCreatedEvent);
     }

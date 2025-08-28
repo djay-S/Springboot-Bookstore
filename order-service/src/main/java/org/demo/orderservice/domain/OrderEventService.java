@@ -2,6 +2,7 @@ package org.demo.orderservice.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.demo.orderservice.domain.model.enums.OrderEventType;
@@ -12,8 +13,6 @@ import org.demo.orderservice.domain.model.records.OrderErrorEvent;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service

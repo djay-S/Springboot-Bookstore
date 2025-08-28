@@ -1,5 +1,6 @@
 package org.demo.orderservice.domain;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.demo.orderservice.domain.model.enums.OrderStatus;
@@ -8,8 +9,6 @@ import org.demo.orderservice.domain.model.records.CreateOrderResponse;
 import org.demo.orderservice.domain.model.records.OrderCreatedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -62,6 +61,7 @@ public class OrderService {
     }
 
     private boolean canBeDelivered(OrderEntity order) {
-        return DELIVERY_ALLOWED_COUNTRIES.contains(order.getDeliveryAddress().country().toUpperCase());
+        return DELIVERY_ALLOWED_COUNTRIES.contains(
+                order.getDeliveryAddress().country().toUpperCase());
     }
 }

@@ -1,11 +1,10 @@
 package org.demo.orderservice.domain;
 
-import org.demo.orderservice.domain.model.records.*;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.demo.orderservice.domain.model.records.*;
 
 class OrderEventMapper {
 
@@ -16,8 +15,7 @@ class OrderEventMapper {
                 getOrderItems(order),
                 order.getCustomer(),
                 order.getDeliveryAddress(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
     }
 
     static OrderDeliveredEvent buildOrderDeliveredEvent(OrderEntity order) {
