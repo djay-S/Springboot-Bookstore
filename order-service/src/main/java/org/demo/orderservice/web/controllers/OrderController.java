@@ -7,8 +7,11 @@ import org.demo.orderservice.domain.OrderService;
 import org.demo.orderservice.domain.SecurityService;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
 import org.demo.orderservice.domain.model.records.CreateOrderResponse;
+import org.demo.orderservice.domain.model.records.OrderSummary;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -25,5 +28,12 @@ public class OrderController {
         final String userName = securityService.getLoginUserName();
         log.info("Creating order for user: {}", userName);
         return orderService.createOrder(userName, request);
+    }
+
+    @GetMapping
+    List<OrderSummary> getOrders() {
+        String userName = securityService.getLoginUserName();
+        log.info("Fetching orders for user: {}", userName);
+        return orderService.findOrders(userName);
     }
 }

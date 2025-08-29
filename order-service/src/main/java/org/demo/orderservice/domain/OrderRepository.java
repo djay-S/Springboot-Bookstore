@@ -3,7 +3,9 @@ package org.demo.orderservice.domain;
 import java.util.List;
 import java.util.Optional;
 import org.demo.orderservice.domain.model.enums.OrderStatus;
+import org.demo.orderservice.domain.model.records.OrderSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     List<OrderEntity> findByStatus(OrderStatus status);
@@ -15,4 +17,11 @@ interface OrderRepository extends JpaRepository<OrderEntity, Long> {
         order.setStatus(orderStatus);
         save(order);
     }
+
+    @Query("""
+            select new org.demo.orderservice.domain.model.records.OrderSummary(o.orderNumber, o.status)
+            from OrderEntity o
+            where o.userName = :userName
+            """)
+    List<OrderSummary> findByUserName(String userName);
 }

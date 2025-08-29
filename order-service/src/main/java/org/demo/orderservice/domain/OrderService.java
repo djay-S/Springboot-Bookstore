@@ -7,6 +7,7 @@ import org.demo.orderservice.domain.model.enums.OrderStatus;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
 import org.demo.orderservice.domain.model.records.CreateOrderResponse;
 import org.demo.orderservice.domain.model.records.OrderCreatedEvent;
+import org.demo.orderservice.domain.model.records.OrderSummary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,5 +64,9 @@ public class OrderService {
     private boolean canBeDelivered(OrderEntity order) {
         return DELIVERY_ALLOWED_COUNTRIES.contains(
                 order.getDeliveryAddress().country().toUpperCase());
+    }
+
+    public List<OrderSummary> findOrders(String userName) {
+        return orderRepository.findByUserName(userName);
     }
 }
