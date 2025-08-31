@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.demo.orderservice.domain.model.enums.OrderStatus;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
 import org.demo.orderservice.domain.model.records.OrderDTO;
@@ -44,7 +43,6 @@ public class OrderMapper {
                 order.getDeliveryAddress(),
                 order.getStatus(),
                 order.getComments(),
-                order.getCreatedAt()
-        );
+                order.getCreatedAt());
     }
 }

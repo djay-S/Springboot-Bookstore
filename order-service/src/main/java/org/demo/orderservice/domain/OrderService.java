@@ -2,7 +2,6 @@ package org.demo.orderservice.domain;
 
 import java.util.List;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.demo.orderservice.domain.model.enums.OrderStatus;
@@ -70,7 +69,8 @@ public class OrderService {
     }
 
     public Optional<OrderDTO> findUserOrder(String userName, String orderNumber) {
-        return orderRepository.findByUserNameAndOrderNumber(userName, orderNumber)
+        return orderRepository
+                .findByUserNameAndOrderNumber(userName, orderNumber)
                 .map(OrderMapper::toDto);
     }
 }

@@ -10,7 +10,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.demo.orderservice.AbstractIntegrationTest;
 import org.demo.orderservice.domain.model.records.OrderSummary;
 import org.demo.orderservice.testdata.TestDataGenerator;
@@ -20,9 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 /*
-* For every test method this sql script is executed.
-* By default, if the file is not specified, it checks for classpath
-* */
+ * For every test method this sql script is executed.
+ * By default, if the file is not specified, it checks for classpath
+ * */
 @Sql("/test-orders.sql")
 class OrderControllerTest extends AbstractIntegrationTest {
 
@@ -88,8 +87,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
                     .statusCode(HttpStatus.OK.value())
                     .extract()
                     .body()
-                    .as(new TypeRef<>() {
-                    });
+                    .as(new TypeRef<>() {});
 
             assertThat(orderSummaries).hasSize(2);
         }

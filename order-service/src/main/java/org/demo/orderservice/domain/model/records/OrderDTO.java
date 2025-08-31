@@ -1,11 +1,10 @@
 package org.demo.orderservice.domain.model.records;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.demo.orderservice.domain.model.enums.OrderStatus;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+import org.demo.orderservice.domain.model.enums.OrderStatus;
 
 public record OrderDTO(
         String orderNumber,
