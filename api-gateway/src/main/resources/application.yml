@@ -1,0 +1,65 @@
+server:
+  port: 8989
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+#          To forward the request routes based on mentioned predicates to the filters
+          routes:
+            - id: catalog-service
+              uri: ${CATALOG_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/catalog/**
+#                http://localhost:8989/catalog/api/products -> http://localhost:8081/api/products
+              filters:
+                - RewritePath=/catalog/?(?<segment>.*), /${segment}
+            - id: orders-service
+              uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/orders/**
+              filters:
+                - RewritePath=/orders/?(?<segment>.*), /${segment}
+            - id: openapi
+              uri: http://localhost:${server.port}
+              predicates:
+                - Path=/v3/api-docs/**
+              filters:
+                - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
+                allow-credentials: false
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Methods Access-Control-Allow-Headers RETAIN_FIRST
+
+#For exception handling by mvc
+  mvc:
+    problemdetails:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    use-root-path: true
+#    Static swagger documentation configuration of internal services for swagger ui
+#    For dynamic configuration, refer SwaggerConfig
+#    urls:
+#      - name: catalog
+#        url: /v3/api-docs/catalog
+#      - name: orders
+#        url: /v3/api-docs/orders
