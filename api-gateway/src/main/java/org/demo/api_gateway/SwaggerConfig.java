@@ -11,6 +11,7 @@ import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import org.springframework.context.annotation.Configuration;
+// Extra comment to trigger build
 
 @Configuration
 class SwaggerConfig {
