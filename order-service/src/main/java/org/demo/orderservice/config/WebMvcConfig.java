@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//This cors configuration is implemented to handle redirection from Swagger documentation.
+// This cors configuration is implemented to handle redirection from Swagger documentation.
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
