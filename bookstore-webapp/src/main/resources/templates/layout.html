@@ -65,7 +65,9 @@
 <script defer src="/webjars/alpinejs/3.14.9/dist/cdn.min.js"></script>
 <script src="/js/cartStore.js"></script>
 <script th:inline="javascript">
-/*<![CDATA[*/
+/*
+This is now not needed since we are using @HttpExchange methods for OrderServiceClient and CatalogServiceClient
+<![CDATA[*/
 const apiGatewayUrl = /*[[${@environment.getProperty('bookstore.api-gateway-url')}]]*/ '';
 /*]]>*/
 </script>
