@@ -1,5 +1,6 @@
 package org.demo.bookstore_webapp.client;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.demo.bookstore_webapp.ApplicationProperties;
 import org.demo.bookstore_webapp.client.catalog.CatalogServiceClient;
@@ -11,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-
-import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
