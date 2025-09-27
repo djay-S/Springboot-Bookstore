@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.demo.bookstore_webapp.client.order.*;
+import org.demo.bookstore_webapp.services.SecurityHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class OrderController {
     private final OrderServiceClient orderServiceClient;
-    //    private final SecurityHelper securityHelper;
+        private final SecurityHelper securityHelper;
 
     @GetMapping("/cart")
     String cart() {
@@ -55,8 +56,7 @@ class OrderController {
     }
 
     private Map<String, ?> getHeaders() {
-        //        String accessToken = securityHelper.getAccessToken();
-        //        return Map.of("Authorization", "Bearer " + accessToken);
-        return Map.of();
+                String accessToken = securityHelper.getAccessToken();
+                return Map.of("Authorization", "Bearer " + accessToken);
     }
 }
