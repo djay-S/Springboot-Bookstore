@@ -2,11 +2,14 @@ package org.demo.orderservice.web.controllers;
 
 import static org.junit.jupiter.api.Named.named;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
+
+import org.demo.orderservice.WithMockOAuth2User;
 import org.demo.orderservice.domain.OrderService;
 import org.demo.orderservice.domain.SecurityService;
 import org.demo.orderservice.domain.model.records.CreateOrderRequest;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * by mocking its dependencies, such as {@link OrderService} and {@link SecurityService}.
  */
 @WebMvcTest(OrderController.class)
+@WithMockOAuth2User(username = "user")
 public class OrderControllerUnitTest {
     @MockitoBean
     private OrderService orderService;
@@ -70,6 +74,10 @@ public class OrderControllerUnitTest {
     @MethodSource("createOrderRequestProvider")
     void shouldReturnBadRequestWhenOrderPayloadIsInvalid(CreateOrderRequest request) throws Exception {
         mockMvc.perform(post("/api/orders")
+//                Need to add this, as without this we would get 403 response status code
+//                This is because Spring Security by default enables a CSRF filter
+//                https://g.co/gemini/share/b8b5fc6fdebc
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest());
