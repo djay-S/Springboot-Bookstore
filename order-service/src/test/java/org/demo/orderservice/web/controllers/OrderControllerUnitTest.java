@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
-
 import org.demo.orderservice.WithMockOAuth2User;
 import org.demo.orderservice.domain.OrderService;
 import org.demo.orderservice.domain.SecurityService;
@@ -74,9 +73,9 @@ public class OrderControllerUnitTest {
     @MethodSource("createOrderRequestProvider")
     void shouldReturnBadRequestWhenOrderPayloadIsInvalid(CreateOrderRequest request) throws Exception {
         mockMvc.perform(post("/api/orders")
-//                Need to add this, as without this we would get 403 response status code
-//                This is because Spring Security by default enables a CSRF filter
-//                https://g.co/gemini/share/b8b5fc6fdebc
+                        //                Need to add this, as without this we would get 403 response status code
+                        //                This is because Spring Security by default enables a CSRF filter
+                        //                https://g.co/gemini/share/b8b5fc6fdebc
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))

@@ -59,19 +59,20 @@ public class SecurityConfig {
      */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(c -> c.requestMatchers(
-                "/",
-                "/js/*",
-                "/css/*",
-                "/images/*",
-                "/error",
-                "/webjars/**",
-                "/actuator/**",
-                "/products/**",
-                "/api/products/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated())
+        httpSecurity
+                .authorizeHttpRequests(c -> c.requestMatchers(
+                                "/",
+                                "/js/*",
+                                "/css/*",
+                                "/images/*",
+                                "/error",
+                                "/webjars/**",
+                                "/actuator/**",
+                                "/products/**",
+                                "/api/products/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .oauth2Login(Customizer.withDefaults())

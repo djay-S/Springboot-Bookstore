@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 public class SecurityService {
 
     public String getLoginUserName() {
-        JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        JwtAuthenticationToken authentication =
+                (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         Jwt jwt = (Jwt) authentication.getPrincipal();
         return jwt.getClaimAsString("preferred_username");
     }

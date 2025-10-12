@@ -9,10 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.demo.orderservice.AbstractIntegrationTest;
 import org.demo.orderservice.WithMockOAuth2User;
 import org.demo.orderservice.domain.model.records.OrderSummary;
@@ -66,11 +64,9 @@ class OrderControllerTest extends AbstractIntegrationTest {
                             ]
                         }
                     """;
-            mockMvc.perform(
-                    post("/api/orders")
+            mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload)
-                    )
+                            .content(payload))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.orderNumber", notNullValue()))
                     .andReturn();
@@ -79,11 +75,9 @@ class OrderControllerTest extends AbstractIntegrationTest {
         @Test
         void shouldReturnBadRequestWhenMandatoryDataIsMissing() throws Exception {
             var payload = TestDataGenerator.createOrderRequestWithInvalidCustomer();
-            mockMvc.perform(
-                    post("/api/orders")
+            mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(String.valueOf(payload))
-            )
+                            .content(String.valueOf(payload)))
                     .andExpect(status().isBadRequest());
         }
     }
@@ -92,14 +86,11 @@ class OrderControllerTest extends AbstractIntegrationTest {
     class GetOrdersTest {
         @Test
         void shouldGetOrdersSuccessfully() throws Exception {
-            MvcResult mvcResult = mockMvc.perform(
-                            get("/api/orders")
-                    )
+            MvcResult mvcResult = mockMvc.perform(get("/api/orders"))
                     .andExpect(status().isOk())
                     .andReturn();
             String contentAsString = mvcResult.getResponse().getContentAsString();
-            List<OrderSummary> orderSummaries = objectMapper.readValue(contentAsString, new TypeReference<>() {
-            });
+            List<OrderSummary> orderSummaries = objectMapper.readValue(contentAsString, new TypeReference<>() {});
 
             assertThat(orderSummaries).hasSize(2);
         }
@@ -111,9 +102,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
 
         @Test
         void shouldGetOrderSuccessfully() throws Exception {
-            mockMvc.perform(
-                    get("/api/orders/{orderNumber}", orderNumber)
-            )
+            mockMvc.perform(get("/api/orders/{orderNumber}", orderNumber))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.orderNumber", is(orderNumber)))
                     .andExpect(jsonPath("$.items.size()", is(2)));

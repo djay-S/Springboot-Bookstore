@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class OrderController {
     private final OrderServiceClient orderServiceClient;
-        private final SecurityHelper securityHelper;
+    private final SecurityHelper securityHelper;
 
     @GetMapping("/cart")
     String cart() {
@@ -56,7 +56,7 @@ class OrderController {
     }
 
     private Map<String, ?> getHeaders() {
-                String accessToken = securityHelper.getAccessToken();
-                return Map.of("Authorization", "Bearer " + accessToken);
+        String accessToken = securityHelper.getAccessToken();
+        return Map.of("Authorization", "Bearer " + accessToken);
     }
 }
