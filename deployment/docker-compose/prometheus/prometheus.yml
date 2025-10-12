@@ -1,0 +1,50 @@
+# global config
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    # in this case, target url would be: http://localhost:9090
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'catalog-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      # here host.docker.internal is used instead of localhost
+      # this is done if we are running in local machine
+      # when running in docker image, use localhost
+      - targets: ['host.docker.internal:8081']
+#      - targets: ['catalog-service:8081']
+
+  - job_name: 'order-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+#      - targets: ['order-service:8082']
+
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8083']
+#      - targets: ['notification-service:8083']
+
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8989']
+#      - targets: ['api-gateway:8989']
+
+  - job_name: 'bookstore-webapp'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+#      - targets: ['bookstore-webapp:8080']
