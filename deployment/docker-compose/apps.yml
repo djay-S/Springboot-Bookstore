@@ -18,6 +18,8 @@ services:
       resources:
         limits:
           memory: 700m
+    labels:
+      logging: "promtail"
 
   order-service:
     image: 'dhananjaysinghkushwaha/bookstore-order-service'
@@ -44,6 +46,8 @@ services:
       resources:
         limits:
           memory: 700m
+    labels:
+      logging: "promtail"
 
   notification-service:
     image: 'dhananjaysinghkushwaha/bookstore-notification-service'
@@ -72,6 +76,8 @@ services:
       resources:
         limits:
           memory: 700m
+    labels:
+      logging: "promtail"
 
   api-gateway:
     image: 'dhananjaysinghkushwaha/bookstore-api-gateway'
@@ -88,6 +94,8 @@ services:
       resources:
         limits:
           memory: 700m
+    labels:
+      logging: "promtail"
 
   bookstore-webapp:
     image: 'dhananjaysinghkushwaha/bookstore-bookstore-webapp'
@@ -102,3 +110,5 @@ services:
       resources:
         limits:
           memory: 700m
+    labels:
+      logging: "promtail"
