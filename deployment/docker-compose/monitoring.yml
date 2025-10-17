@@ -28,6 +28,16 @@ services:
     depends_on:
       - promtail
 
+  tempo:
+    image: grafana/tempo:2.4.1
+    container_name: tempo
+    command: "-config.file /etc/tempo-config.yml"
+    ports:
+      - "3200:3200"     # Tempo
+      - "9411:9411"     # Zipkin
+    volumes:
+      - ./tempo/tempo.yml:/etc/tempo-config.yml
+
   grafana:
     image: grafana/grafana:10.4.2
     container_name: grafana
