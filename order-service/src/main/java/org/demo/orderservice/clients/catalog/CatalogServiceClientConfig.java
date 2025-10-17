@@ -34,8 +34,10 @@ public class CatalogServiceClientConfig {
      * For example, if we had a second configuration class for another external service</p>
      * */
     @Bean
-    RestClient restClient(ApplicationProperties applicationProperties) {
-        return RestClient.builder()
+    RestClient restClient(
+            RestClient.Builder builder,
+            ApplicationProperties applicationProperties) {
+        return builder
                 .baseUrl(applicationProperties.catalogServiceUrl())
                 .requestFactory(ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS
                         .withConnectTimeout(Duration.ofSeconds(5))
