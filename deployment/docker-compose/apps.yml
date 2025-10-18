@@ -28,7 +28,7 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-order-service'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - ORDERS_CATALOG_SERVICE_URL=http://api-gateway:8989/catalog
+      - ORDERS_CATALOG_SERVICE_URL=http://localhost:8989/catalog
       - DB_URL={db_url}
       - DB_USERNAME={postgres_user}
       - DB_PASSWORD={postgres_password}
@@ -90,8 +90,8 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-api-gateway'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CATALOG_SERVICE_URL=http://catalog-service:8081
-      - ORDER_SERVICE_URL=http://order-service:8082
+      - CATALOG_SERVICE_URL=http://localhost:8081
+      - ORDER_SERVICE_URL=http://localhost:8082
       - MANAGEMENT_TRACING_ENABLED=${MANAGEMENT_TRACING_ENABLED}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
     ports:
@@ -105,10 +105,10 @@ services:
       logging: "promtail"
 
   bookstore-webapp:
-    image: 'dhananjaysinghkushwaha/bookstore-bookstore-webapp'
+    image: 'dhananjaysinghkushwaha/bookstore-webapp'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - BOOKSTORE_API_GATEWAY_URL=http://api-gateway:8989
+      - BOOKSTORE_API_GATEWAY_URL=http://localhost:8989
       - OAUTH2_SERVER_URL=http://localhost:9191
       - MANAGEMENT_TRACING_ENABLED=${MANAGEMENT_TRACING_ENABLED}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
