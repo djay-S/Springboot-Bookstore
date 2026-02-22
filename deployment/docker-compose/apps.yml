@@ -5,10 +5,13 @@ services:
 #    container-name: catalog-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+#      When both the app and database are in Docker (or the app is in Docker and database is on host with
+#      special networking), the app inside Docker accesses the database using the container's internal port,
+#      not the host-mapped port.
       - DB_URL=jdbc:postgresql://catalog-db:5432/postgres
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
-      - SWAGGER_API_GATEWAY_URL=http://localhost:8989/catalog
+      - SWAGGER_API_GATEWAY_URL=http://api-gateway:8989/catalog
       - MANAGEMENT_TRACING_ENABLED=true
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
     ports:
@@ -17,10 +20,10 @@ services:
     depends_on:
       catalog-db:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 700m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
     labels:
       logging: "promtail"
 
@@ -28,15 +31,15 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-order-service'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - ORDERS_CATALOG_SERVICE_URL=http://localhost:8989/catalog
-      - DB_URL={db_url}
-      - DB_USERNAME={postgres_user}
-      - DB_PASSWORD={postgres_password}
+      - ORDERS_CATALOG_SERVICE_URL=http://api-gateway:8989/catalog
+      - DB_URL=jdbc:postgresql://order-db:5432/postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
       - RABBITMQ_HOST=bookstore-rabbitmq
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
-      - OAUTH2_SERVER_URL=http://localhost:9191
+      - OAUTH2_SERVER_URL=http://keycloak:9191
       - MANAGEMENT_TRACING_ENABLED=${MANAGEMENT_TRACING_ENABLED}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
     ports:
@@ -47,10 +50,10 @@ services:
         condition: service_healthy
       bookstore-rabbitmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 700m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
     labels:
       logging: "promtail"
 
@@ -58,9 +61,9 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-notification-service'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - DB_URL={db_url}
-      - DB_USERNAME={postgres_user}
-      - DB_PASSWORD={postgres_password}
+      - DB_URL=jdbc:postgresql://notification-db:5432/postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
       - RABBITMQ_HOST=bookstore-rabbitmq
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=guest
@@ -79,10 +82,10 @@ services:
         condition: service_healthy
       mailhog:
         condition: service_started
-    deploy:
-      resources:
-        limits:
-          memory: 700m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
     labels:
       logging: "promtail"
 
@@ -90,17 +93,17 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-api-gateway'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CATALOG_SERVICE_URL=http://localhost:8081
-      - ORDER_SERVICE_URL=http://localhost:8082
+      - CATALOG_SERVICE_URL=http://catalog-service:8081
+      - ORDER_SERVICE_URL=http://order-service:8082
       - MANAGEMENT_TRACING_ENABLED=${MANAGEMENT_TRACING_ENABLED}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
     ports:
       - "8989:8989"
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 700m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
     labels:
       logging: "promtail"
 
@@ -108,16 +111,16 @@ services:
     image: 'dhananjaysinghkushwaha/bookstore-webapp'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - BOOKSTORE_API_GATEWAY_URL=http://localhost:8989
-      - OAUTH2_SERVER_URL=http://localhost:9191
+      - BOOKSTORE_API_GATEWAY_URL=http://api-gateway:8989
+      - OAUTH2_SERVER_URL=http://keycloak:9191
       - MANAGEMENT_TRACING_ENABLED=${MANAGEMENT_TRACING_ENABLED}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
     ports:
       - "8080:8080"
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 700m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
     labels:
       logging: "promtail"
