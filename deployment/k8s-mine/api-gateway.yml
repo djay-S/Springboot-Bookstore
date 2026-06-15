@@ -1,0 +1,82 @@
+# ═══════════════════════════════════════════════════════════
+# api-gateway — Single entry point for all API calls
+# ═══════════════════════════════════════════════════════════
+# Spring Cloud Gateway (WebFlux — reactive/non-blocking).
+# Acts as a reverse proxy. All external API requests come here
+# first, and the gateway forwards them to the right service.
+#
+# Why use a gateway?
+#   - One single URL for all backend services
+#   - Hides internal services from the outside world
+#   - Central place to handle CORS, security, rate limiting
+#
+# Routing rules (defined in application.yml via env vars):
+#   /catalog/api/products  → catalog-service:8081/api/products
+#                            (strips the /catalog prefix)
+#   /orders/api/orders     → order-service:8082/api/orders
+#                            (strips the /orders prefix)
+#
+# The bookstore-webapp calls this gateway at http://api-gateway:8989
+# for ALL its backend data. The webapp does NOT call individual
+# services directly.
+# ═══════════════════════════════════════════════════════════
+
+# ─── Deployment ────────────────────────────────────────
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bookstore-api-gateway-deployment
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: bookstore-api-gateway-pod
+          image: dhananjaysinghkushwaha/bookstore-api-gateway:latest
+          ports:
+            # Matches server.port=8989 in application.yml
+            - containerPort: 8989
+          env:
+            # ── Backend service URLs ───────────────────
+            # These tell the gateway where to forward incoming requests.
+            # Uses K8s internal DNS: "catalog-service" resolves to
+            # the Service IP inside the cluster (defined in catalog.yml).
+            #
+            # Why NOT host.minikube.internal?
+            # Because catalog-service and order-service are INSIDE the
+            # same Kubernetes cluster, not on the host machine.
+            #
+            # Maps to: CATALOG_SERVICE_URL in application.yml
+            - name: CATALOG_SERVICE_URL
+              value: http://catalog-service:8081
+            # Maps to: ORDER_SERVICE_URL in application.yml
+            - name: ORDER_SERVICE_URL
+              value: http://order-service:8082
+
+---
+# ─── Service ──────────────────────────────────────────
+# The service name is "api-gateway". Other pods (like the
+# webapp) reach the gateway at: http://api-gateway:8989
+#
+# This name must match what the webapp's BOOKSTORE_API_GATEWAY_URL
+# env var points to.
+# ─────────────────────────────────────────────────────
+kind: Service
+apiVersion: v1
+metadata:
+  # This service name must match what other services use in their
+  # environment variables. The webapp calls http://api-gateway:8989.
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - name: api-gateway-server-port
+      protocol: TCP
+      port: 8989
+      targetPort: 8989

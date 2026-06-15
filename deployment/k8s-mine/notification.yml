@@ -1,0 +1,70 @@
+# ═══════════════════════════════════════════════════════════
+# notification-service — Email notifications
+# ═══════════════════════════════════════════════════════════
+# Spring Boot app that sends email notifications when orders
+# are created, delivered, or cancelled.
+#
+# How it works:
+#   1. Listens to RabbitMQ queues for order events
+#      (published by the order-service)
+#   2. When an event arrives (e.g. "order created"),
+#      it sends an email via MailHog (a fake SMTP server for dev)
+#
+# This is an event-driven service — it does NOT have a REST API.
+# It only reads from RabbitMQ and sends emails.
+#
+# Queues it listens to (bound to exchange "orders-exchange"):
+#   new-orders, delivered-orders, cancelled-orders, error-orders
+# ═══════════════════════════════════════════════════════════
+
+# ─── Deployment ────────────────────────────────────────
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bookstore-notification-deployment
+spec:
+  selector:
+    matchLabels:
+      app: bookstore-notification-service
+  template:
+    metadata:
+      labels:
+        app: bookstore-notification-service
+    spec:
+      containers:
+        - name: bookstore-notification-pod
+          image: dhananjaysinghkushwaha/bookstore-notification-service:latest
+          ports:
+            # Matches server.port=8083 in application.properties
+            - containerPort: 8083
+          env:
+            # ── Database ────────────────────────────────
+            # Stores processed events so it doesn't send
+            # duplicate emails after a restart.
+            # Runs on host via Docker.
+            - name: DB_URL
+              value: jdbc:postgresql://host.minikube.internal:35432/postgres
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
+
+            # ⚠️ TODO: Add the missing env vars ───────
+
+---
+# ─── Service ──────────────────────────────────────────
+# Other pods can reach this service at:
+#   http://bookstore-notification-service:8083
+# ─────────────────────────────────────────────────────
+kind: Service
+apiVersion: v1
+metadata:
+  name: bookstore-notification-service
+spec:
+  selector:
+    app: bookstore-notification-service
+  ports:
+    - name: notification-server-port
+      protocol: TCP
+      port: 8083
+      targetPort: 8083

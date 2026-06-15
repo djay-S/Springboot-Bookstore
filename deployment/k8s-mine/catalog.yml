@@ -1,0 +1,126 @@
+# ═══════════════════════════════════════════════════════════
+# catalog-service — Product catalog
+# ═══════════════════════════════════════════════════════════
+# Spring Boot app that stores and serves product data.
+# Uses PostgreSQL for storage, Flyway for database migrations.
+#
+# Who calls this service?
+#   - api-gateway forwards external HTTP requests to it
+#     (e.g., GET /api/products?page=1)
+#   - order-service calls it directly (RestClient, NOT through
+#     the gateway) to validate product codes when creating orders
+#
+# After deployment, reachable at: http://catalog-service:8081
+# ═══════════════════════════════════════════════════════════
+
+# ─── Old bare Pod (kept for reference) ─────────────────
+# This was replaced by a Deployment below because a bare Pod
+# won't restart if it crashes. A Deployment manages pods and
+# keeps them running automatically.
+# ─────────────────────────────────────────────────────
+#kind: Pod
+#apiVersion: v1
+#metadata:
+#  name: bookstore-catalog-pod
+#spec:
+#  restartPolicy: Never
+#  containers:
+#    - name: bookstore-catalog
+#      image: dhananjaysinghkushwaha/bookstore-catalog-service:latest
+##      imagePullPolicy:
+#      ports:
+#        - containerPort: 8081
+
+---
+# ─── Deployment ────────────────────────────────────────
+# A Deployment keeps a pod running. If the container crashes
+# or the node fails, Kubernetes creates a new pod automatically.
+#
+# Key fields:
+#   selector.matchLabels  — ties the Deployment to its pods
+#   template.metadata.labels — labels applied to each pod
+#   template.spec.containers — what to run inside the pod
+# ─────────────────────────────────────────────────────
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bookstore-catalog-deployment
+spec:
+  # The Deployment watches pods with this label.
+  # Must match template labels below.
+  selector:
+    matchLabels:
+      app: catalog-service
+  template:
+    metadata:
+      # These labels must match:
+      #   1) The Deployment selector (above)
+      #   2) The Service selector (further down)
+      labels:
+        app: catalog-service
+    spec:
+      containers:
+        - name: bookstore-catalog-pod
+          # Docker image built with:
+          #   mvn -pl catalog-service spring-boot:build-image -DskipTests
+          image: dhananjaysinghkushwaha/bookstore-catalog-service:latest
+          ports:
+            # The port the application listens on.
+            # Matches server.port=8081 in application.properties
+            - containerPort: 8081
+          env:
+            # ── Database connection ─────────────────────
+            # These tell Spring Boot how to connect to PostgreSQL.
+            # The database runs on your HOST machine via Docker
+            # (deployment/docker-compose/infra.yml).
+            #
+            # host.minikube.internal = special DNS address that
+            # Minikube provides so pods can reach the host machine.
+            # Port 15432 is the host port mapped to PostgreSQL's 5432.
+
+            # Maps to Spring Boot property: spring.datasource.url
+            - name: DB_URL
+              value: jdbc:postgresql://host.minikube.internal:15432/postgres
+            # Maps to: spring.datasource.username
+            - name: DB_USERNAME
+              value: postgres
+            # Maps to: spring.datasource.password
+            - name: DB_PASSWORD
+              value: postgres
+
+---
+# ─── Service ──────────────────────────────────────────
+# A Service gives this app a stable DNS name inside the cluster.
+# Other pods can reach it at: http://catalog-service:8081
+# (The name comes from the metadata.name below.)
+#
+# Without a Service, every time the pod restarts its IP changes,
+# and other services would lose track of it.
+# ─────────────────────────────────────────────────────
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: catalog-service
+spec:
+  # Tells the Service which pods to forward traffic to.
+  # Must match the label on the pods created by the Deployment.
+  selector:
+    app: catalog-service
+  ports:
+    - name: catalog-server-port
+      protocol: TCP
+      # port = what other pods use when calling this Service
+      port: 8081
+      # targetPort = what the container is actually listening on
+      targetPort: 8081
+
+#    # ── Database port (NOT needed here) ──────────────
+#    # The database port was removed because PostgreSQL runs
+#    # separately on the host machine (not inside this pod).
+#    # The Service should only expose the application port.
+#    - name: catalog-database-port
+#      protocol: TCP
+#      port: 15432
+#      targetPort: 15432

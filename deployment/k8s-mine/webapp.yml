@@ -1,0 +1,93 @@
+# ═══════════════════════════════════════════════════════════
+# bookstore-webapp — User-facing web application
+# ═══════════════════════════════════════════════════════════
+# Spring Boot app with Thymeleaf templates for HTML pages
+# and Alpine.js for interactive frontend behavior.
+#
+# 📖 How requests flow:
+#   Browser ──GET /products──► Webapp renders HTML ──► Browser shows page
+#                                            │
+#   Browser (Alpine.js) ──GET /api/products──► Webapp Controller
+#                                                  │
+#               Uses @HttpExchange to call the     │
+#               api-gateway at http://api-gateway:8989
+#                                                  │
+#                                          Returns JSON
+#
+# 🔑 Important: The browser does NOT call the api-gateway directly.
+#   The webapp acts as a "server-side proxy" — it calls the gateway
+#   behind the scenes and returns data to the browser.
+#   This keeps the gateway URL hidden from the client and allows
+#   the webapp to attach OAuth2 tokens before forwarding requests.
+#
+# 🔐 Requires Keycloak for user login (OAuth2 authorization_code flow).
+# ═══════════════════════════════════════════════════════════
+
+# ─── Deployment ────────────────────────────────────────
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bookstore-bookstore-webapp-deployment
+spec:
+  selector:
+    matchLabels:
+      app: bookstore-bookstore-webapp-service
+  template:
+    metadata:
+      labels:
+        app: bookstore-bookstore-webapp-service
+    spec:
+      containers:
+        - name: bookstore-bookstore-webapp-pod
+          image: dhananjaysinghkushwaha/bookstore-webapp:latest
+          ports:
+            # Matches server.port=8080 in application.properties
+            - containerPort: 8080
+          env:
+            # ── API Gateway URL ─────────────────────────
+            # The webapp calls the gateway for ALL backend data.
+            # This is a SERVER-SIDE HTTP call (Spring @HttpExchange),
+            # not a browser redirect. The browser never sees this URL.
+            #
+            # "api-gateway" is the Kubernetes Service name from
+            # api-gateway.yml. Inside the cluster, this DNS name
+            # resolves to the gateway's internal IP.
+            #
+            # Maps to: bookstore.api-gateway-url in application.properties
+            - name: BOOKSTORE_API_GATEWAY_URL
+              value: http://api-gateway:8989
+
+            # ── Keycloak (OAuth2 login) ────────────────
+            # The webapp is an OAuth2 client. Users log in via Keycloak
+            # (click the "Login" button in the navbar).
+            # After login, the webapp gets an access token and passes
+            # it to the order-service (through the gateway) as a
+            # Bearer token in the Authorization header.
+            #
+            # Keycloak runs on the host machine via Docker.
+            # Maps to: OAUTH2_SERVER_URL in application.properties
+            - name: OAUTH2_SERVER_URL
+              value: http://host.minikube.internal:9191
+
+---
+# ─── Service ──────────────────────────────────────────
+# Other pods can reach the webapp at:
+#   http://bookstore-bookstore-webapp-service:8080
+#
+# Note: this service is ClusterIP (no external port).
+# To access from your browser, use:
+#   kubectl port-forward svc/bookstore-bookstore-webapp-service 8080:8080
+# Then open http://localhost:8080
+# ─────────────────────────────────────────────────────
+kind: Service
+apiVersion: v1
+metadata:
+  name: bookstore-bookstore-webapp-service
+spec:
+  selector:
+    app: bookstore-bookstore-webapp-service
+  ports:
+    - name: bookstore-webapp-server-port
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

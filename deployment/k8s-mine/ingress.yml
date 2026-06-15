@@ -1,0 +1,68 @@
+# ═══════════════════════════════════════════════════════════
+# Ingress — Smart HTTP router
+# ═══════════════════════════════════════════════════════════
+# An Ingress is like a smart door that routes incoming HTTP
+# requests to the correct Service based on the URL path.
+#
+# Instead of using NodePort (which gives a random port number),
+# the Ingress gives a clean URL: http://<minikube-ip>
+#
+# 🚀 Prerequisite: You must enable the Minikube ingress addon:
+#     minikube addons enable ingress
+#   This installs the nginx-ingress controller into the cluster.
+#
+# 🌐 After applying, find the URL with:
+#     minikube ip
+#   Then open http://<ip> in your browser.
+# ═══════════════════════════════════════════════════════════
+
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: bookstore-ingress
+spec:
+  rules:
+    # ── Host filtering (commented out) ────────────────
+    # When "host" is set, the Ingress only responds to requests
+    # with that specific Host header (e.g., "localhost").
+    # Since we access via Minikube IP (not localhost), this is
+    # commented out so the Ingress matches any hostname.
+    # ─────────────────────────────────────────────────────
+    #    - host: "localhost"
+    - http:
+        paths:
+          # ── Route 1: Webapp (/) ──────────────────────
+          # Everything under / goes to the webapp.
+          # This covers: /products, /cart, /orders, /api/products, etc.
+          # The webapp's Thymeleaf controllers handle the routing
+          # and call the api-gateway behind the scenes.
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: bookstore-bookstore-webapp-service
+                port:
+                  number: 8080
+
+          # ── Route 2: API Gateway (/api-gateway) ──────
+          # Direct access to the api-gateway (for testing with curl
+          # or Postman without going through the webapp).
+          # Example: http://<ip>/api-gateway/catalog/api/products
+          - pathType: Prefix
+            path: /api-gateway
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8989
+
+          # ── Route 3: Catalog service (/catalog-service) ──
+          # Direct access to the catalog service for debugging.
+          # Example: http://<ip>/catalog-service/api/products
+          - pathType: Prefix
+            path: /catalog-service
+            backend:
+              service:
+                name: catalog-service
+                port:
+                  number: 8081

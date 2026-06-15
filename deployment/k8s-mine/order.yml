@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════
+# order-service — Order management
+# ═══════════════════════════════════════════════════════════
+# Spring Boot app that handles order creation and tracking.
+# Uses PostgreSQL for storage, RabbitMQ to publish events,
+# and OAuth2 (Keycloak) to validate user authentication.
+#
+# Who calls this service?
+#   - api-gateway forwards external HTTP requests to it
+#     (browser → webapp → gateway → order-service)
+#
+# Who does this service call?
+#   - catalog-service (directly, NOT through the gateway)
+#     to check product codes exist and fetch prices
+#
+# Events published to RabbitMQ:
+#   Exchange: orders-exchange
+#   Queues: new-orders, delivered-orders, cancelled-orders, error-orders
+# ═══════════════════════════════════════════════════════════
+
+# ─── Deployment ────────────────────────────────────────
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bookstore-order-deployment
+spec:
+  selector:
+    matchLabels:
+      app: bookstore-order-service
+  template:
+    metadata:
+      # This label must match the Service selector below.
+      labels:
+        app: bookstore-order-service
+    spec:
+      containers:
+        - name: bookstore-order-pod
+          image: dhananjaysinghkushwaha/bookstore-order-service:latest
+          ports:
+            # Matches server.port=8082 in application.properties
+            - containerPort: 8082
+          env:
+            # ── Database ────────────────────────────────
+            # PostgreSQL for orders. Runs on host via Docker.
+            # Maps to: spring.datasource.url
+            - name: DB_URL
+              value: jdbc:postgresql://host.minikube.internal:25432/postgres
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
+
+            # ⚠️ TODO: Add the missing env vars ───────
+
+---
+# ─── Service ──────────────────────────────────────────
+# Other pods can reach this service at:
+#   http://bookstore-order-service:8082
+# ─────────────────────────────────────────────────────
+kind: Service
+apiVersion: v1
+metadata:
+  name: bookstore-order-service
+spec:
+  selector:
+    app: bookstore-order-service
+  ports:
+    - name: order-server-port
+      protocol: TCP
+      port: 8082
+      targetPort: 8082
