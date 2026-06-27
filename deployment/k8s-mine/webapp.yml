@@ -64,10 +64,11 @@ spec:
             # it to the order-service (through the gateway) as a
             # Bearer token in the Authorization header.
             #
-            # Keycloak runs on the host machine via Docker.
+            # Keycloak runs in-cluster as a K8s Deployment (see keycloak.yml).
+            # Pods reach it via K8s DNS; the browser reaches it via Ingress.
             # Maps to: OAUTH2_SERVER_URL in application.properties
             - name: OAUTH2_SERVER_URL
-              value: http://host.minikube.internal:9191
+              value: http://keycloak
 
 ---
 # ─── Service ──────────────────────────────────────────

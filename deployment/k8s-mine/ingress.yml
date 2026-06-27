@@ -22,14 +22,18 @@ metadata:
   name: bookstore-ingress
 spec:
   rules:
-    # ── Host filtering (commented out) ────────────────
-    # When "host" is set, the Ingress only responds to requests
-    # with that specific Host header (e.g., "localhost").
-    # Since we access via Minikube IP (not localhost), this is
-    # commented out so the Ingress matches any hostname.
+    # ── Host-based routing ────────────────────────────
+    # Each "host" rule makes the Ingress only respond to
+    # requests with that specific Host header.
+    #
+    #   bookstore  →  webapp  (main user-facing frontend)
+    #   keycloak   →  Keycloak (OAuth2 login redirects)
+    #
+    # The browser resolves both hostnames via /etc/hosts
+    # to 192.168.49.2 (Minikube IP).
     # ─────────────────────────────────────────────────────
-    #    - host: "localhost"
-    - http:
+    - host: bookstore
+      http:
         paths:
           # ── Route 1: Webapp (/) ──────────────────────
           # Everything under / goes to the webapp.
@@ -66,3 +70,19 @@ spec:
                 name: catalog-service
                 port:
                   number: 8081
+    # ── Route 4: Keycloak (OAuth2 login) ─────────────
+    # When the user clicks Login, they are redirected to
+    # http://keycloak/realms/bookstore/... /etc/hosts resolves
+    # keycloak → 192.168.49.2 → Ingress → Keycloak pod.
+    # ─────────────────────────────────────────────────────
+    - host: keycloak
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 80
+#                  number: 9191     # Port was 9191 before Service was changed to 80 — kept for reference.
