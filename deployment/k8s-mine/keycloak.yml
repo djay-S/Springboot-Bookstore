@@ -576,7 +576,7 @@ data:
           "oidc.ciba.grant.enabled" : "false",
           "client.secret.creation.time" : "1758391050",
           "backchannel.logout.session.required" : "true",
-          "post.logout.redirect.uris" : "https://bookstore http://bookstore",
+          "post.logout.redirect.uris" : "https://bookstore##http://bookstore",
           "oauth2.device.authorization.grant.enabled" : "false",
           "backchannel.logout.revoke.offline.tokens" : "false"
         },
