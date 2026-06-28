@@ -70,6 +70,17 @@ spec:
                 name: catalog-service
                 port:
                   number: 8081
+
+          # ── Route 4: Order service (/order-service) ──
+          # Direct access to the order service for debugging.
+          # Example: http://<ip>/order-service/api/products
+          - pathType: Prefix
+            path: /order-service
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 8082
     # ── Route 4: Keycloak (OAuth2 login) ─────────────
     # When the user clicks Login, they are redirected to
     # http://keycloak/realms/bookstore/... /etc/hosts resolves

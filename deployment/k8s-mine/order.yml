@@ -26,12 +26,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: bookstore-order-service
+      app: order-service
   template:
     metadata:
       # This label must match the Service selector below.
       labels:
-        app: bookstore-order-service
+        app: order-service
     spec:
       containers:
         - name: bookstore-order-pod
@@ -50,20 +50,48 @@ spec:
             - name: DB_PASSWORD
               value: postgres
 
-            # ⚠️ TODO: Add the missing env vars ───────
+            # ── RabbitMQ (message broker) ──────────────────
+            # Order service publishes events to RabbitMQ.
+            # Notification-service listens to these events.
+            # RabbitMQ runs on host via Docker.
+            # Maps to: spring.rabbitmq.host / .port / .username / .password
+            - name: RABBITMQ_HOST
+              value: host.minikube.internal
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest
+
+            # ── Keycloak (OAuth2 authentication) ──────────
+            # Validates JWT tokens sent by the webapp via the
+            # api-gateway. Pods resolve "keycloak" via K8s DNS
+            # to the Service ClusterIP on port 80.
+            # Maps to: OAUTH2_SERVER_URL in application.properties
+            - name: OAUTH2_SERVER_URL
+              value: http://keycloak
+
+            # ── Catalog service client ────────────────────
+            # Validates product codes and fetches prices via
+            # RestClient (direct call, NOT through api-gateway).
+            # Wrapped with Resilience4j (retry + circuit breaker).
+            # Maps to: orders.catalog-service-url
+            - name: ORDERS_CATALOG_SERVICE_URL
+              value: http://catalog-service:8081
 
 ---
 # ─── Service ──────────────────────────────────────────
 # Other pods can reach this service at:
-#   http://bookstore-order-service:8082
+#   http://order-service:8082
 # ─────────────────────────────────────────────────────
 kind: Service
 apiVersion: v1
 metadata:
-  name: bookstore-order-service
+  name: order-service
 spec:
   selector:
-    app: bookstore-order-service
+    app: order-service
   ports:
     - name: order-server-port
       protocol: TCP
