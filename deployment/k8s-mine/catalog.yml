@@ -69,6 +69,30 @@ spec:
             # The port the application listens on.
             # Matches server.port=8081 in application.properties
             - containerPort: 8081
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
           env:
             # ── Database connection ─────────────────────
             # These tell Spring Boot how to connect to PostgreSQL.
@@ -88,7 +112,16 @@ spec:
             # Maps to: spring.datasource.password
             - name: DB_PASSWORD
               value: postgres
-
+            # ── Kubernetes probes ─────────────────────────
+            # Enables Spring Boot Actuator liveness/readiness
+            # endpoints at /actuator/health/liveness and
+            # /actuator/health/readiness for K8s probe checks.
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_READINESSSTATE_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED
+              value: "true"
 ---
 # ─── Service ──────────────────────────────────────────
 # A Service gives this app a stable DNS name inside the cluster.

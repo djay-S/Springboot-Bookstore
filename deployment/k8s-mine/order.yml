@@ -39,6 +39,30 @@ spec:
           ports:
             # Matches server.port=8082 in application.properties
             - containerPort: 8082
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
           env:
             # ── Database ────────────────────────────────
             # PostgreSQL for orders. Runs on host via Docker.
@@ -79,6 +103,17 @@ spec:
             # Maps to: orders.catalog-service-url
             - name: ORDERS_CATALOG_SERVICE_URL
               value: http://catalog-service:8081
+
+            # ── Kubernetes probes ─────────────────────────
+            # Enables Spring Boot Actuator liveness/readiness
+            # endpoints at /actuator/health/liveness and
+            # /actuator/health/readiness for K8s probe checks.
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_READINESSSTATE_ENABLED
+              value: "true"
+            - name: MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED
+              value: "true"
 
 ---
 # ─── Service ──────────────────────────────────────────

@@ -81,7 +81,7 @@ spec:
                 name: order-service
                 port:
                   number: 8082
-    # ── Route 4: Keycloak (OAuth2 login) ─────────────
+    # ── Route 5: Keycloak (OAuth2 login) ─────────────
     # When the user clicks Login, they are redirected to
     # http://keycloak/realms/bookstore/... /etc/hosts resolves
     # keycloak → 192.168.49.2 → Ingress → Keycloak pod.
